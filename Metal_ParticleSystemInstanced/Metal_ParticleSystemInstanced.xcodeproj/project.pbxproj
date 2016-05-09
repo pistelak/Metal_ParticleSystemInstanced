@@ -1,0 +1,361 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		25563BB51CE0736D006971F2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BB41CE0736D006971F2 /* main.m */; };
+		25563BB81CE0736D006971F2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BB71CE0736D006971F2 /* AppDelegate.m */; };
+		25563BBB1CE0736D006971F2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BBA1CE0736D006971F2 /* ViewController.m */; };
+		25563BBE1CE0736D006971F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25563BBC1CE0736D006971F2 /* Main.storyboard */; };
+		25563BC01CE0736D006971F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25563BBF1CE0736D006971F2 /* Assets.xcassets */; };
+		25563BC31CE0736D006971F2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25563BC11CE0736D006971F2 /* LaunchScreen.storyboard */; };
+		25563BCC1CE074B2006971F2 /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BCB1CE074B2006971F2 /* View.m */; };
+		25563BD01CE07A99006971F2 /* MetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BCF1CE07A99006971F2 /* MetalRenderer.m */; };
+		25563BD31CE07ADF006971F2 /* Mesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BD21CE07ADF006971F2 /* Mesh.m */; };
+		25563BD61CE0A997006971F2 /* sphere.obj in Resources */ = {isa = PBXBuildFile; fileRef = 25563BD51CE0A997006971F2 /* sphere.obj */; };
+		25563BD91CE0A9AD006971F2 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 25563BD81CE0A9AD006971F2 /* Shaders.metal */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		25563BB01CE0736D006971F2 /* Metal_ParticleSystemInstanced.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metal_ParticleSystemInstanced.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		25563BB41CE0736D006971F2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		25563BB61CE0736D006971F2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		25563BB71CE0736D006971F2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		25563BB91CE0736D006971F2 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		25563BBA1CE0736D006971F2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		25563BBD1CE0736D006971F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		25563BBF1CE0736D006971F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		25563BC21CE0736D006971F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		25563BC41CE0736D006971F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		25563BCA1CE074B2006971F2 /* View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = View.h; sourceTree = "<group>"; };
+		25563BCB1CE074B2006971F2 /* View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = "<group>"; };
+		25563BCE1CE07A99006971F2 /* MetalRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalRenderer.h; sourceTree = "<group>"; };
+		25563BCF1CE07A99006971F2 /* MetalRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetalRenderer.m; sourceTree = "<group>"; };
+		25563BD11CE07ADF006971F2 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
+		25563BD21CE07ADF006971F2 /* Mesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Mesh.m; sourceTree = "<group>"; };
+		25563BD41CE089D2006971F2 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		25563BD51CE0A997006971F2 /* sphere.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sphere.obj; sourceTree = "<group>"; };
+		25563BD81CE0A9AD006971F2 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		25563BAD1CE0736D006971F2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		25563BA71CE0736D006971F2 = {
+			isa = PBXGroup;
+			children = (
+				25563BB21CE0736D006971F2 /* Metal_ParticleSystemInstanced */,
+				25563BB11CE0736D006971F2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		25563BB11CE0736D006971F2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				25563BB01CE0736D006971F2 /* Metal_ParticleSystemInstanced.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		25563BB21CE0736D006971F2 /* Metal_ParticleSystemInstanced */ = {
+			isa = PBXGroup;
+			children = (
+				25563BDA1CE0A9B1006971F2 /* Shaders */,
+				25563BD71CE0A99D006971F2 /* Geometry */,
+				25563BCE1CE07A99006971F2 /* MetalRenderer.h */,
+				25563BCF1CE07A99006971F2 /* MetalRenderer.m */,
+				25563BCD1CE074B9006971F2 /* App */,
+				25563BB31CE0736D006971F2 /* Supporting Files */,
+			);
+			path = Metal_ParticleSystemInstanced;
+			sourceTree = "<group>";
+		};
+		25563BB31CE0736D006971F2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				25563BB61CE0736D006971F2 /* AppDelegate.h */,
+				25563BB71CE0736D006971F2 /* AppDelegate.m */,
+				25563BBC1CE0736D006971F2 /* Main.storyboard */,
+				25563BBF1CE0736D006971F2 /* Assets.xcassets */,
+				25563BC11CE0736D006971F2 /* LaunchScreen.storyboard */,
+				25563BC41CE0736D006971F2 /* Info.plist */,
+				25563BB41CE0736D006971F2 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		25563BCD1CE074B9006971F2 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				25563BB91CE0736D006971F2 /* ViewController.h */,
+				25563BBA1CE0736D006971F2 /* ViewController.m */,
+				25563BCA1CE074B2006971F2 /* View.h */,
+				25563BCB1CE074B2006971F2 /* View.m */,
+			);
+			name = App;
+			sourceTree = "<group>";
+		};
+		25563BD71CE0A99D006971F2 /* Geometry */ = {
+			isa = PBXGroup;
+			children = (
+				25563BD51CE0A997006971F2 /* sphere.obj */,
+				25563BD11CE07ADF006971F2 /* Mesh.h */,
+				25563BD21CE07ADF006971F2 /* Mesh.m */,
+			);
+			name = Geometry;
+			sourceTree = "<group>";
+		};
+		25563BDA1CE0A9B1006971F2 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				25563BD41CE089D2006971F2 /* ShaderTypes.h */,
+				25563BD81CE0A9AD006971F2 /* Shaders.metal */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		25563BAF1CE0736D006971F2 /* Metal_ParticleSystemInstanced */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 25563BC71CE0736D006971F2 /* Build configuration list for PBXNativeTarget "Metal_ParticleSystemInstanced" */;
+			buildPhases = (
+				25563BAC1CE0736D006971F2 /* Sources */,
+				25563BAD1CE0736D006971F2 /* Frameworks */,
+				25563BAE1CE0736D006971F2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Metal_ParticleSystemInstanced;
+			productName = Metal_ParticleSystemInstanced;
+			productReference = 25563BB01CE0736D006971F2 /* Metal_ParticleSystemInstanced.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		25563BA81CE0736D006971F2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Radek Pistelak";
+				TargetAttributes = {
+					25563BAF1CE0736D006971F2 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = 25563BAB1CE0736D006971F2 /* Build configuration list for PBXProject "Metal_ParticleSystemInstanced" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 25563BA71CE0736D006971F2;
+			productRefGroup = 25563BB11CE0736D006971F2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				25563BAF1CE0736D006971F2 /* Metal_ParticleSystemInstanced */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		25563BAE1CE0736D006971F2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25563BC31CE0736D006971F2 /* LaunchScreen.storyboard in Resources */,
+				25563BC01CE0736D006971F2 /* Assets.xcassets in Resources */,
+				25563BD61CE0A997006971F2 /* sphere.obj in Resources */,
+				25563BBE1CE0736D006971F2 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		25563BAC1CE0736D006971F2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25563BD01CE07A99006971F2 /* MetalRenderer.m in Sources */,
+				25563BD91CE0A9AD006971F2 /* Shaders.metal in Sources */,
+				25563BCC1CE074B2006971F2 /* View.m in Sources */,
+				25563BD31CE07ADF006971F2 /* Mesh.m in Sources */,
+				25563BBB1CE0736D006971F2 /* ViewController.m in Sources */,
+				25563BB81CE0736D006971F2 /* AppDelegate.m in Sources */,
+				25563BB51CE0736D006971F2 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		25563BBC1CE0736D006971F2 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				25563BBD1CE0736D006971F2 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		25563BC11CE0736D006971F2 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				25563BC21CE0736D006971F2 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		25563BC51CE0736D006971F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		25563BC61CE0736D006971F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		25563BC81CE0736D006971F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = Metal_ParticleSystemInstanced/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ran.Metal-ParticleSystemInstanced";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		25563BC91CE0736D006971F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = Metal_ParticleSystemInstanced/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ran.Metal-ParticleSystemInstanced";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		25563BAB1CE0736D006971F2 /* Build configuration list for PBXProject "Metal_ParticleSystemInstanced" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				25563BC51CE0736D006971F2 /* Debug */,
+				25563BC61CE0736D006971F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		25563BC71CE0736D006971F2 /* Build configuration list for PBXNativeTarget "Metal_ParticleSystemInstanced" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				25563BC81CE0736D006971F2 /* Debug */,
+				25563BC91CE0736D006971F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 25563BA81CE0736D006971F2 /* Project object */;
+}
