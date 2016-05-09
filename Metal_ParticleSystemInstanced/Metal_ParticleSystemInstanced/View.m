@@ -34,7 +34,6 @@
         
         _metalLayer.device          = _device;
         _metalLayer.pixelFormat     = MTLPixelFormatBGRA8Unorm;
-        
     }
     
     return self;
@@ -53,6 +52,7 @@
     MTLRenderPassColorAttachmentDescriptor *colorAttachment = _renderPassDescriptor.colorAttachments[0];
     colorAttachment.texture = texture;
     colorAttachment.loadAction = MTLLoadActionClear;
+    colorAttachment.storeAction = MTLStoreActionStore;
     colorAttachment.clearColor = MTLClearColorMake(0.f, 0.7f, 0.f, 1.f);
     
     if(_depthPixelFormat != MTLPixelFormatInvalid)
@@ -93,11 +93,11 @@
     return _renderPassDescriptor;
 }
 
-
 - (id <CAMetalDrawable>)currentDrawable
 {
-    if (_currentDrawable == nil)
+    if (!_currentDrawable) {
         _currentDrawable = [_metalLayer nextDrawable];
+    }
     
     return _currentDrawable;
 }

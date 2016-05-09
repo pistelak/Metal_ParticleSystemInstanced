@@ -16,6 +16,8 @@
 
 @property (nonatomic, weak) id<ViewControllerDelegate> delegate;
 
+@property (nonatomic, readonly) CFTimeInterval timeSinceLastDraw;
+
 @end
 
 @protocol ViewControllerDelegate <NSObject>

@@ -11,16 +11,27 @@
 
 #include <simd/simd.h>
 
-/// Indices of vertex attribute in descriptor.
 enum AAPLVertexAttributes {
     AAPLVertexAttributePosition = 0,
     AAPLVertexAttributeNormal   = 1,
 };
 
-/// Indices for buffer bind points.
 enum AAPLBufferIndex  {
     AAPLMeshVertexBuffer      = 0,
     AAPLFrameUniformBuffer    = 1,
 };
+
+#ifdef __cplusplus
+
+/**
+ * @brief Shared data types between CPU code and metal shader code
+ */
+typedef struct {
+    simd::float4x4 modelMatrix;
+    simd::float4x4 viewMatrix;
+    simd::float4x4 projectionMatrix;
+} uniforms_t;
+
+#endif
 
 #endif /* ShaderTypes_h */

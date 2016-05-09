@@ -24,7 +24,6 @@
     
     BOOL _firstDrawOccurred;
     CFTimeInterval _timeSinceLastDrawPreviousTime;
-    CFTimeInterval _timeSinceLastDraw;
 }
 
 - (instancetype) initWithCoder:(NSCoder *)aDecoder
@@ -47,6 +46,7 @@
     
     assert([metalView isKindOfClass:[View class]]);
     
+    metalView.contentScaleFactor = [UIScreen mainScreen].nativeScale;
     metalView.depthPixelFormat = _renderer.depthPixelFormat;
     metalView.delegate = _renderer;
     self.delegate = _renderer;

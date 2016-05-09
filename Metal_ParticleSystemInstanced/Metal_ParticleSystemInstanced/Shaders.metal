@@ -7,46 +7,32 @@
 //
 
 #include <metal_stdlib>
+#include <metal_common>
+
+#include "ShaderTypes.h"
+
 using namespace metal;
 
-struct Vertex
-{
+struct VertexInput {
+    float3 position [[attribute(AAPLVertexAttributePosition)]];
+    float3 normal   [[attribute(AAPLVertexAttributeNormal)]];
+};
+
+typedef struct {
     float4 position [[position]];
-};
+} ShaderInOut;
 
-struct VertexPointOut
+vertex ShaderInOut vertexFunction(VertexInput in [[stage_in]],
+                                  constant uniforms_t *uniforms[[buffer(AAPLFrameUniformBuffer)]])
 {
-    float4 position [[position]];
-    float pointSize [[point_size]];
-};
-
-struct Uniforms
-{
-    float4x4 projectionMatrix;
-};
-
-vertex Vertex vertexFunction(device Vertex *vertices [[buffer(0)]],
-                             constant Uniforms * uniforms [[buffer(1)]],
-                             uint vid [[vertex_id]])
-{
-    Vertex vertexOut;
-    vertexOut.position = uniforms->projectionMatrix * vertices[vid].position;
+    float4x4 mvpMatrix = uniforms->projectionMatrix * uniforms->viewMatrix * uniforms->modelMatrix;
     
-    return vertexOut;
+    ShaderInOut out;
+    out.position = mvpMatrix * float4(in.position, 1.0);
+    return out;
 }
 
-vertex VertexPointOut vertexFunctionForPoints(device Vertex *vertices [[buffer(0)]],
-                                              constant Uniforms * uniforms [[buffer(1)]],
-                                              uint vid [[vertex_id]])
+fragment float4 fragmentFunction(void)
 {
-    VertexPointOut vertexOut;
-    vertexOut.position = uniforms->projectionMatrix * vertices[vid].position;
-    vertexOut.pointSize = 1.0f;
-    
-    return vertexOut;
-}
-
-fragment half4 fragmentFunction(void)
-{
-    return half4(1.0, 1.0, 1.0, 1.0);
+    return float4(1.0);
 }

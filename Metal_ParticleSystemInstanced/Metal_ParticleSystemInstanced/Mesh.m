@@ -7,40 +7,7 @@
 //
 
 #import "Mesh.h"
-
-@interface Submesh : NSObject
-
-- (instancetype) initWithSubmesh:(MTKSubmesh *) MTKsubmesh;
-
-- (void)renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder;
-
-@end
-
-@implementation Submesh
-{
-    MTKSubmesh *_submesh;
-}
-
-- (instancetype) initWithSubmesh:(MTKSubmesh *) MTKsubmesh
-{
-    self = [super init];
-    if (self) {
-        _submesh = MTKsubmesh;
-    }
-    
-    return self;
-}
-
-- (void) renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder {
-    
-    [encoder drawIndexedPrimitives:_submesh.primitiveType
-                        indexCount:_submesh.indexCount
-                         indexType:_submesh.indexType
-                       indexBuffer:_submesh.indexBuffer.buffer
-                 indexBufferOffset:_submesh.indexBuffer.offset];
-}
-
-@end
+#import "ShaderTypes.h"
 
 @implementation Mesh
 {
@@ -48,7 +15,7 @@
     
     NSArray<MTKMesh *> *_meshes;
     MTKMesh *_mesh;
-    NSMutableArray<Submesh *> *_submeshes;
+    MTKSubmesh *_submesh;
 }
 
 - (instancetype) initWithModelName:(NSString *)modelName
@@ -66,7 +33,6 @@
                                        vertexDescriptor:[self modelIOVertexDescriptor]
                                         bufferAllocator:[[MTKMeshBufferAllocator alloc] initWithDevice:device]];
 
-        
         NSError *error;
        _meshes = [MTKMesh newMeshesFromAsset:asset
                                       device:device
@@ -78,12 +44,7 @@
         }
         
         _mesh = [_meshes firstObject];
-        _submeshes = [[NSMutableArray alloc] initWithCapacity:_mesh.submeshes.count];
-        
-        for(NSUInteger index = 0; index < _mesh.submeshes.count; index++) {
-            Submesh *submesh = [[Submesh alloc] initWithSubmesh:_mesh.submeshes[index]];
-            [_submeshes addObject:submesh];
-        }
+        _submesh = [_mesh.submeshes firstObject];
     }
     
     return self;
@@ -97,23 +58,25 @@
 - (MDLVertexDescriptor *) modelIOVertexDescriptor
 {
     MDLVertexDescriptor *mdlVertexDescriptor = MTKModelIOVertexDescriptorFromMetal(_vertexDescriptor);
-    mdlVertexDescriptor.attributes[0].name = MDLVertexAttributePosition;
-    mdlVertexDescriptor.attributes[1].name = MDLVertexAttributeNormal;
+    mdlVertexDescriptor.attributes[AAPLVertexAttributePosition].name = MDLVertexAttributePosition;
+    mdlVertexDescriptor.attributes[AAPLVertexAttributeNormal].name = MDLVertexAttributeNormal;
     
     return mdlVertexDescriptor;
 }
 
-- (void)renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder {
+- (void)renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder
+{
+    MTKMeshBuffer *vertexBuffer = [_mesh.vertexBuffers firstObject];
     
-    [_mesh.vertexBuffers enumerateObjectsUsingBlock:^(MTKMeshBuffer *vertexBuffer, NSUInteger index, BOOL *stop) {
-        if (vertexBuffer.buffer != nil) {
-            [encoder setVertexBuffer:vertexBuffer.buffer offset:vertexBuffer.offset atIndex:index];
-        }
-    }];
-    
-    for(Submesh *submesh in _submeshes) {
-        [submesh renderWithEncoder:encoder];
-    }
+    [encoder setVertexBuffer:vertexBuffer.buffer
+                      offset:vertexBuffer.offset
+                     atIndex:AAPLMeshVertexBuffer];
+
+    [encoder drawIndexedPrimitives:_submesh.primitiveType
+                        indexCount:_submesh.indexCount
+                         indexType:_submesh.indexType
+                       indexBuffer:_submesh.indexBuffer.buffer
+                 indexBufferOffset:_submesh.indexBuffer.offset];
 }
 
 @end

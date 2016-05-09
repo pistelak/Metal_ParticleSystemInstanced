@@ -14,10 +14,12 @@
 		25563BC01CE0736D006971F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25563BBF1CE0736D006971F2 /* Assets.xcassets */; };
 		25563BC31CE0736D006971F2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25563BC11CE0736D006971F2 /* LaunchScreen.storyboard */; };
 		25563BCC1CE074B2006971F2 /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BCB1CE074B2006971F2 /* View.m */; };
-		25563BD01CE07A99006971F2 /* MetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BCF1CE07A99006971F2 /* MetalRenderer.m */; };
+		25563BD01CE07A99006971F2 /* MetalRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25563BCF1CE07A99006971F2 /* MetalRenderer.mm */; };
 		25563BD31CE07ADF006971F2 /* Mesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BD21CE07ADF006971F2 /* Mesh.m */; };
 		25563BD61CE0A997006971F2 /* sphere.obj in Resources */ = {isa = PBXBuildFile; fileRef = 25563BD51CE0A997006971F2 /* sphere.obj */; };
 		25563BD91CE0A9AD006971F2 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 25563BD81CE0A9AD006971F2 /* Shaders.metal */; };
+		258B0DB81CE0CA82006DD5D7 /* AAPLTransforms.mm in Sources */ = {isa = PBXBuildFile; fileRef = 258B0DB61CE0CA82006DD5D7 /* AAPLTransforms.mm */; };
+		258B0DBB1CE0F55C006DD5D7 /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 258B0DBA1CE0F55C006DD5D7 /* cube.obj */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,12 +36,16 @@
 		25563BCA1CE074B2006971F2 /* View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = View.h; sourceTree = "<group>"; };
 		25563BCB1CE074B2006971F2 /* View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = "<group>"; };
 		25563BCE1CE07A99006971F2 /* MetalRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalRenderer.h; sourceTree = "<group>"; };
-		25563BCF1CE07A99006971F2 /* MetalRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetalRenderer.m; sourceTree = "<group>"; };
+		25563BCF1CE07A99006971F2 /* MetalRenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalRenderer.mm; sourceTree = "<group>"; };
 		25563BD11CE07ADF006971F2 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		25563BD21CE07ADF006971F2 /* Mesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Mesh.m; sourceTree = "<group>"; };
 		25563BD41CE089D2006971F2 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		25563BD51CE0A997006971F2 /* sphere.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sphere.obj; sourceTree = "<group>"; };
 		25563BD81CE0A9AD006971F2 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		258B0DB51CE0CA82006DD5D7 /* AAPLTransforms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLTransforms.h; sourceTree = "<group>"; };
+		258B0DB61CE0CA82006DD5D7 /* AAPLTransforms.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AAPLTransforms.mm; sourceTree = "<group>"; };
+		258B0DB71CE0CA82006DD5D7 /* Math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Math.h; sourceTree = "<group>"; };
+		258B0DBA1CE0F55C006DD5D7 /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,8 +80,9 @@
 			children = (
 				25563BDA1CE0A9B1006971F2 /* Shaders */,
 				25563BD71CE0A99D006971F2 /* Geometry */,
+				258B0DB91CE0CA86006DD5D7 /* Math */,
 				25563BCE1CE07A99006971F2 /* MetalRenderer.h */,
-				25563BCF1CE07A99006971F2 /* MetalRenderer.m */,
+				25563BCF1CE07A99006971F2 /* MetalRenderer.mm */,
 				25563BCD1CE074B9006971F2 /* App */,
 				25563BB31CE0736D006971F2 /* Supporting Files */,
 			);
@@ -111,6 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				25563BD51CE0A997006971F2 /* sphere.obj */,
+				258B0DBA1CE0F55C006DD5D7 /* cube.obj */,
 				25563BD11CE07ADF006971F2 /* Mesh.h */,
 				25563BD21CE07ADF006971F2 /* Mesh.m */,
 			);
@@ -124,6 +132,16 @@
 				25563BD81CE0A9AD006971F2 /* Shaders.metal */,
 			);
 			name = Shaders;
+			sourceTree = "<group>";
+		};
+		258B0DB91CE0CA86006DD5D7 /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				258B0DB51CE0CA82006DD5D7 /* AAPLTransforms.h */,
+				258B0DB61CE0CA82006DD5D7 /* AAPLTransforms.mm */,
+				258B0DB71CE0CA82006DD5D7 /* Math.h */,
+			);
+			name = Math;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,6 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				25563BC31CE0736D006971F2 /* LaunchScreen.storyboard in Resources */,
+				258B0DBB1CE0F55C006DD5D7 /* cube.obj in Resources */,
 				25563BC01CE0736D006971F2 /* Assets.xcassets in Resources */,
 				25563BD61CE0A997006971F2 /* sphere.obj in Resources */,
 				25563BBE1CE0736D006971F2 /* Main.storyboard in Resources */,
@@ -197,12 +216,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25563BD01CE07A99006971F2 /* MetalRenderer.m in Sources */,
+				25563BD01CE07A99006971F2 /* MetalRenderer.mm in Sources */,
 				25563BD91CE0A9AD006971F2 /* Shaders.metal in Sources */,
 				25563BCC1CE074B2006971F2 /* View.m in Sources */,
 				25563BD31CE07ADF006971F2 /* Mesh.m in Sources */,
 				25563BBB1CE0736D006971F2 /* ViewController.m in Sources */,
 				25563BB81CE0736D006971F2 /* AppDelegate.m in Sources */,
+				258B0DB81CE0CA82006DD5D7 /* AAPLTransforms.mm in Sources */,
 				25563BB51CE0736D006971F2 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,6 +374,7 @@
 				25563BC91CE0736D006971F2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
