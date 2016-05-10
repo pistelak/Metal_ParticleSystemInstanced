@@ -22,9 +22,9 @@
 @synthesize currentDrawable      = _currentDrawable;
 @synthesize renderPassDescriptor = _renderPassDescriptor;
 
-- (instancetype) initWithCoder:(NSCoder *)aDecoder
+- (instancetype) init
 {
-    self = [super initWithCoder:aDecoder];
+    self = [super init];
     if (self) {
         self.opaque = YES;
         self.backgroundColor = nil;

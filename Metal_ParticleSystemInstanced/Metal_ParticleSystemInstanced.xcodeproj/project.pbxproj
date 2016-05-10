@@ -10,7 +10,6 @@
 		25563BB51CE0736D006971F2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BB41CE0736D006971F2 /* main.m */; };
 		25563BB81CE0736D006971F2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BB71CE0736D006971F2 /* AppDelegate.m */; };
 		25563BBB1CE0736D006971F2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BBA1CE0736D006971F2 /* ViewController.m */; };
-		25563BBE1CE0736D006971F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25563BBC1CE0736D006971F2 /* Main.storyboard */; };
 		25563BC01CE0736D006971F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25563BBF1CE0736D006971F2 /* Assets.xcassets */; };
 		25563BC31CE0736D006971F2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25563BC11CE0736D006971F2 /* LaunchScreen.storyboard */; };
 		25563BCC1CE074B2006971F2 /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = 25563BCB1CE074B2006971F2 /* View.m */; };
@@ -29,7 +28,6 @@
 		25563BB71CE0736D006971F2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		25563BB91CE0736D006971F2 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		25563BBA1CE0736D006971F2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		25563BBD1CE0736D006971F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		25563BBF1CE0736D006971F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		25563BC21CE0736D006971F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		25563BC41CE0736D006971F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -96,7 +94,6 @@
 			children = (
 				25563BB61CE0736D006971F2 /* AppDelegate.h */,
 				25563BB71CE0736D006971F2 /* AppDelegate.m */,
-				25563BBC1CE0736D006971F2 /* Main.storyboard */,
 				25563BBF1CE0736D006971F2 /* Assets.xcassets */,
 				25563BC11CE0736D006971F2 /* LaunchScreen.storyboard */,
 				25563BC41CE0736D006971F2 /* Info.plist */,
@@ -207,7 +204,6 @@
 				258B0DBB1CE0F55C006DD5D7 /* cube.obj in Resources */,
 				25563BC01CE0736D006971F2 /* Assets.xcassets in Resources */,
 				25563BD61CE0A997006971F2 /* sphere.obj in Resources */,
-				25563BBE1CE0736D006971F2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,14 +228,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		25563BBC1CE0736D006971F2 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				25563BBD1CE0736D006971F2 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		25563BC11CE0736D006971F2 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -343,6 +331,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ran.Metal-ParticleSystemInstanced";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -354,6 +343,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ran.Metal-ParticleSystemInstanced";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

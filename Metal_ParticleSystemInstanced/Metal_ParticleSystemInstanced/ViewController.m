@@ -26,14 +26,19 @@
     CFTimeInterval _timeSinceLastDrawPreviousTime;
 }
 
-- (instancetype) initWithCoder:(NSCoder *)aDecoder
+- (instancetype) init
 {
-    self = [super initWithCoder:aDecoder];
+    self = [super init];
     if (self) {
         // pass
     }
     
     return self;
+}
+
+- (void) loadView
+{
+    self.view = [[View alloc] init];
 }
 
 - (void) viewDidLoad
@@ -53,6 +58,7 @@
     
     [self dispatchGameLoop];
 }
+
 
 - (BOOL) prefersStatusBarHidden
 {
