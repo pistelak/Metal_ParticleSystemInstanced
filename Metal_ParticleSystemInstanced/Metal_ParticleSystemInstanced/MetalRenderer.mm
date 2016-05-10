@@ -9,10 +9,7 @@
 #import "MetalRenderer.h"
 #import "ShaderTypes.h"
 #import "Math.h"
-
-#import "Particles.h"
-
-static const unsigned kInFlightCommandBuffers = 3;
+#import "ParticleSystem.h"
 
 @implementation MetalRenderer
 {
@@ -27,21 +24,16 @@ static const unsigned kInFlightCommandBuffers = 3;
     
     dispatch_semaphore_t _inflight_semaphore;
     
-    id<MTLBuffer> _particleBuffer[kInFlightCommandBuffers];
-    id<MTLBuffer> _uniformBuffer[kInFlightCommandBuffers];
-    NSInteger _currentBufferIndex;
-    
     // Mesh
     Mesh *_mesh;
     
+    NSInteger _currentBufferIndex;
+    id<MTLBuffer> _uniformBuffer[kInFlightCommandBuffers];
     simd::float4x4 _modelMatrix;
     simd::float4x4 _viewMatrix;
     simd::float4x4 _projectionMatrix;
-    
-    NSTimer *_timer;
-    
-    std::vector<particle_t> _particles;
-    NSUInteger _particleCount;
+
+    ParticleSystem *_particleSystem;
 }
 
 #pragma mark -
@@ -65,26 +57,10 @@ static const unsigned kInFlightCommandBuffers = 3;
         [self initializePipelineStateWithVertexShader:vertexShaderName andFragmentShader:fragmentShaderName];
         [self initializeDataBuffers];
         
-        _particleCount = kBatchSize;
-        
-        const NSTimeInterval timeInterval = 1.0; // in seconds
-        _timer = [NSTimer scheduledTimerWithTimeInterval:timeInterval
-                                                  target:self
-                                                selector:@selector(increaseParticleCount:)
-                                                userInfo:nil
-                                                 repeats:YES];
+        _particleSystem = [[ParticleSystem alloc] initWithDevice:_device];
     }
 
     return self;
-}
-
-- (void) increaseParticleCount:(NSTimer *) timer
-{
-    if ((_particleCount + kBatchSize) <= kMaximumNumberOfParticles) {
-        _particleCount += kBatchSize;
-    } else {
-        [_timer invalidate];
-    }
 }
 
 - (void)initializePipelineStateWithVertexShader:(NSString*)vertexShaderName andFragmentShader:(NSString*)fragmentShaderName
@@ -155,12 +131,8 @@ static const unsigned kInFlightCommandBuffers = 3;
     _mesh = [[Mesh alloc] initWithModelName:@"sphere" device:_device andMTLVertexDescriptor:_mtlVertexDescriptor];
     
     for (unsigned i = 0; i < kInFlightCommandBuffers; ++i) {
-        
         _uniformBuffer[i] = [_device newBufferWithLength:sizeof(uniforms_t) options:MTLResourceCPUCacheModeDefaultCache];
         _uniformBuffer[i].label = [NSString stringWithFormat:@"UniformBuffer%i", i];
-        
-        _particleBuffer[i] = [_device newBufferWithLength:sizeof(simd::float4x4) * kMaximumNumberOfParticles options:MTLResourceCPUCacheModeDefaultCache];
-        _particleBuffer[i].label = [NSString stringWithFormat:@"ParticleBuffer%i", i];
     }
 }
 
@@ -171,8 +143,7 @@ static const unsigned kInFlightCommandBuffers = 3;
 {
     dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER);
     
-    [self updateUniformBuffer];
-    NSUInteger instanceCount = [self updateParticleBuffer];
+    NSUInteger instanceCount = [_particleSystem upload];
     
     id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     
@@ -186,7 +157,8 @@ static const unsigned kInFlightCommandBuffers = 3;
         [renderEncoder pushDebugGroup:@"Setting buffers"];
         
         [renderEncoder setVertexBuffer:_uniformBuffer[_currentBufferIndex] offset:0 atIndex:PSFrameUniformBuffer];
-        [renderEncoder setVertexBuffer:_particleBuffer[_currentBufferIndex] offset:0 atIndex:PSParticleBuffer];
+        
+        [_particleSystem encode:renderEncoder];
         
         [renderEncoder popDebugGroup];
         
@@ -218,6 +190,12 @@ static const unsigned kInFlightCommandBuffers = 3;
     _angle += [controller timeSinceLastDraw] * 0.1;
     simd::float3 cameraPosition = { sinf(_angle) * 10.f, 2.5f, cosf(_angle) * 10.f };
     _viewMatrix = MathUtils::lookAt(cameraPosition);
+    
+    [self updateUniformBuffer];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [_particleSystem update];
+    });
 }
 
 - (void)reshape:(View *)view
@@ -233,17 +211,6 @@ static const unsigned kInFlightCommandBuffers = 3;
     uniforms_t *uniforms = (uniforms_t *) [_uniformBuffer[_currentBufferIndex] contents];
     uniforms->viewMatrix = _viewMatrix;
     uniforms->projectionMatrix = _projectionMatrix;
-}
-
-- (NSUInteger) updateParticleBuffer
-{
-    std::vector<simd::float4x4> particles = updateParticles(&_particles, (uint32_t) _particleCount);
-    
-    memcpy((particle_t *) [_particleBuffer[_currentBufferIndex] contents],
-           &particles[0],
-           sizeof(simd::float4x4) * particles.size());
-    
-    return particles.size();
 }
 
 @end

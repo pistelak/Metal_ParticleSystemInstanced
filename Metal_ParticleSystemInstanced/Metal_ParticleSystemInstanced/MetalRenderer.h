@@ -14,6 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static const unsigned kInFlightCommandBuffers = 3;
+
 @interface MetalRenderer : NSObject <ViewDelegate, ViewControllerDelegate>
 
 - (nullable instancetype) init NS_UNAVAILABLE;
