@@ -57,7 +57,7 @@ vertex ColorInOut vertexFunction(VertexInput in [[stage_in]],
     
     // Calculate the view vector from the perspective of the camera
     float3 vertex_position_cameraspace = ( uniforms->viewMatrix * model_matrix * vertex_position_modelspace ).xyz;
-    out.eye_direction_cameraspace = float3(0.0f,0.0f,0.0f) - vertex_position_cameraspace;
+    out.eye_direction_cameraspace = float3(0.0f) - vertex_position_cameraspace;
     
     // Calculate the direction of the light from the position of the camera
     float3 light_position_cameraspace = ( uniforms->viewMatrix * float4(light_position,1.0f)).xyz;

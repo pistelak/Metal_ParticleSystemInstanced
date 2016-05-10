@@ -51,10 +51,15 @@ static const uint32_t kParticleBufferSize = kMaximumNumberOfParticles * sizeof(p
                                                  repeats:YES];
         
         [self initializeAllParticles];
+        [self initializeModelMatrices];
         [self createParticleBufferOnDevice:device];
     }
     
     return self;
+}
+
+static inline float particleScale() {
+    return 0.05f;
 }
 
 - (void) initializeAllParticles
@@ -62,9 +67,20 @@ static const uint32_t kParticleBufferSize = kMaximumNumberOfParticles * sizeof(p
     for (uint32_t i = 0; i < kMaximumNumberOfParticles; ++i) {
         
         _particles[i].position = 0.f;
-        _particles[i].scale = 0.05f;
+        _particles[i].scale = particleScale();
         _particles[i].vec = MathUtils::ballRandomVector3(0.5f);
         _particles[i].vec.y += 2.f;
+    }
+}
+
+- (void) initializeModelMatrices
+{
+    /**
+     * Pri startu programu nastavim vsem maticim vychozi scale,
+     * ktery modifikuje pouze diagonalu matice
+     */
+    for (uint32_t i = 0; i < kMaximumNumberOfParticles; ++i) {
+        _modelMatrices[i] = AAPL::scale(particleScale());
     }
 }
 
@@ -121,7 +137,12 @@ static const uint32_t kParticleBufferSize = kMaximumNumberOfParticles * sizeof(p
             _particles[i].vec = _particles[i].vec * 0.8;
         }
 
-        _modelMatrices[i] = AAPL::translate(_particles[i].position) * AAPL::scale(_particles[i].scale);
+        /**
+         * Diky tomu ze je scale nastaveny v dobe inicializace muzu ted upravit
+         * pouze jeden ze sloupcu matice a nastavit tak pozici modelu  
+         * Proc? usetreni nasobeni matic
+         */
+        _modelMatrices[i].columns[3].xyz = _particles[i].position;
     }
 }
 
