@@ -21,7 +21,7 @@ typedef struct {
 } particle_t;
 
 static const uint32_t kMaximumNumberOfParticles = 10000;
-static const uint32_t kBatchSize = 100;
+static const uint32_t kBatchSize = 10;
 static const uint32_t kParticleBufferSize = kMaximumNumberOfParticles * sizeof(particle_t);
 
 @implementation ParticleSystem
@@ -34,6 +34,10 @@ static const uint32_t kParticleBufferSize = kMaximumNumberOfParticles * sizeof(p
     
     NSTimer *_timer;
     NSUInteger _particleCount;
+    
+    dispatch_group_t _dispatchGroup;
+    dispatch_queue_t _bgQueue;
+    dispatch_semaphore_t _particleSystemUpdateSemaphore;
 }
 
 - (instancetype) initWithDevice:(id<MTLDevice>)device
@@ -53,6 +57,9 @@ static const uint32_t kParticleBufferSize = kMaximumNumberOfParticles * sizeof(p
         [self initializeAllParticles];
         [self initializeModelMatrices];
         [self createParticleBufferOnDevice:device];
+        
+        _dispatchGroup = dispatch_group_create();
+        _bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
     }
     
     return self;
@@ -102,8 +109,10 @@ static inline float particleScale() {
     }
 }
 
-- (NSUInteger)upload
+- (NSUInteger) upload
 {
+    dispatch_group_wait(_dispatchGroup, DISPATCH_TIME_FOREVER);
+    
     NSUInteger particleCount = _particleCount;
     
     id<MTLBuffer> currentParticleBuffer = _particleBuffer[_currentBufferIndex];
@@ -113,14 +122,14 @@ static inline float particleScale() {
     return particleCount;
 }
 
-- (void)encode:(id<MTLRenderCommandEncoder>)encoder
+- (void) encode:(id<MTLRenderCommandEncoder>)encoder
 {
     [encoder setVertexBuffer:_particleBuffer[_currentBufferIndex] offset:0 atIndex:PSParticleBuffer];
     
     _currentBufferIndex = (_currentBufferIndex + 1) % kInFlightCommandBuffers;
 }
 
-- (void)update
+- (void) _update
 {
     NSUInteger particleCount = _particleCount;
     
@@ -145,5 +154,20 @@ static inline float particleScale() {
         _modelMatrices[i].columns[3].xyz = _particles[i].position;
     }
 }
+
+- (void) update
+{
+    /**
+     * Update dat se provede ve fronte na pozadi
+     * I kdyz je objekt dostane zpravu upload, tak ceka na dokonceni operace upload
+     */
+    __block ParticleSystem *blockSelf = self;
+
+    dispatch_group_async(_dispatchGroup, _bgQueue, ^{
+        [blockSelf _update];
+    });
+
+}
+
 
 @end

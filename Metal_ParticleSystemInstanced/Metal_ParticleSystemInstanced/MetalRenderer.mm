@@ -193,9 +193,7 @@
     
     [self updateUniformBuffer];
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        [_particleSystem update];
-    });
+    [_particleSystem update];
 }
 
 - (void)reshape:(View *)view
