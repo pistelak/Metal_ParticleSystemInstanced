@@ -9,10 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <MetalKit/MetalKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface Mesh : NSObject
 
-- (instancetype) init NS_UNAVAILABLE;
-- (instancetype) initWithModelName:(NSString *)modelName
+
+- (nullable instancetype) init NS_UNAVAILABLE;
+- (nullable instancetype) initWithModelName:(NSString *)modelName
                             device:(id<MTLDevice>)device
             andMTLVertexDescriptor:(MTLVertexDescriptor *) vertexDescriptor NS_DESIGNATED_INITIALIZER;
 
@@ -21,3 +24,5 @@
 @property (nonatomic, copy, readonly) NSString *modelName;
 
 @end
+
+NS_ASSUME_NONNULL_END

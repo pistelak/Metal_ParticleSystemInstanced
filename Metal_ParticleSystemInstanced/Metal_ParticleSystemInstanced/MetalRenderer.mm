@@ -134,17 +134,17 @@ static const unsigned kInFlightCommandBuffers = 3;
 - (MTLVertexDescriptor *) vertexDescriptor
 {
     MTLVertexDescriptor *mtlVertexDescriptor = [[MTLVertexDescriptor alloc] init];
-    mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].format = MTLVertexFormatFloat3;
-    mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].offset = 0;
-    mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].bufferIndex = AAPLMeshVertexBuffer;
+    mtlVertexDescriptor.attributes[PSVertexAttributePosition].format = MTLVertexFormatFloat3;
+    mtlVertexDescriptor.attributes[PSVertexAttributePosition].offset = 0;
+    mtlVertexDescriptor.attributes[PSVertexAttributePosition].bufferIndex = PSMeshVertexBuffer;
     
-    mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].format = MTLVertexFormatFloat3;
-    mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].offset = 12;
-    mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].bufferIndex = AAPLMeshVertexBuffer;
+    mtlVertexDescriptor.attributes[PSVertexAttributeNormal].format = MTLVertexFormatFloat3;
+    mtlVertexDescriptor.attributes[PSVertexAttributeNormal].offset = 12;
+    mtlVertexDescriptor.attributes[PSVertexAttributeNormal].bufferIndex = PSMeshVertexBuffer;
     
-    mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stride = 24;
-    mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stepRate = 1;
-    mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stepFunction = MTLVertexStepFunctionPerVertex;
+    mtlVertexDescriptor.layouts[PSMeshVertexBuffer].stride = 24;
+    mtlVertexDescriptor.layouts[PSMeshVertexBuffer].stepRate = 1;
+    mtlVertexDescriptor.layouts[PSMeshVertexBuffer].stepFunction = MTLVertexStepFunctionPerVertex;
     
     return mtlVertexDescriptor;
 }
@@ -185,8 +185,8 @@ static const unsigned kInFlightCommandBuffers = 3;
         
         [renderEncoder pushDebugGroup:@"Setting buffers"];
         
-        [renderEncoder setVertexBuffer:_uniformBuffer[_currentBufferIndex] offset:0 atIndex:AAPLFrameUniformBuffer];
-        [renderEncoder setVertexBuffer:_particleBuffer[_currentBufferIndex] offset:0 atIndex:AAPLParticleBuffer];
+        [renderEncoder setVertexBuffer:_uniformBuffer[_currentBufferIndex] offset:0 atIndex:PSFrameUniformBuffer];
+        [renderEncoder setVertexBuffer:_particleBuffer[_currentBufferIndex] offset:0 atIndex:PSParticleBuffer];
         
         [renderEncoder popDebugGroup];
         

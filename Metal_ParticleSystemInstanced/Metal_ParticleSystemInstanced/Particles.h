@@ -58,7 +58,6 @@ static inline std::vector<simd::float4x4> updateParticles(std::vector<particle_t
         particles->push_back(particleWithInitialPosition());
     }
     
-    // adjust particle position
     const GLfloat kFrameTime = 1.0f / 60.0f;
     currentNumberOfParticles = (uint32_t) particles->size();
     

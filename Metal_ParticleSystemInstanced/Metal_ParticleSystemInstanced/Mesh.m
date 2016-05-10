@@ -50,7 +50,7 @@
     return self;
 }
 
-- (NSURL *) urlForResource
+- (nullable NSURL *) urlForResource
 {
     return [[NSBundle mainBundle] URLForResource:_modelName withExtension:@"obj"];
 }
@@ -58,8 +58,8 @@
 - (MDLVertexDescriptor *) modelIOVertexDescriptor
 {
     MDLVertexDescriptor *mdlVertexDescriptor = MTKModelIOVertexDescriptorFromMetal(_vertexDescriptor);
-    mdlVertexDescriptor.attributes[AAPLVertexAttributePosition].name = MDLVertexAttributePosition;
-    mdlVertexDescriptor.attributes[AAPLVertexAttributeNormal].name = MDLVertexAttributeNormal;
+    mdlVertexDescriptor.attributes[PSVertexAttributePosition].name = MDLVertexAttributePosition;
+    mdlVertexDescriptor.attributes[PSVertexAttributeNormal].name = MDLVertexAttributeNormal;
     
     return mdlVertexDescriptor;
 }
@@ -70,7 +70,7 @@
     
     [encoder setVertexBuffer:vertexBuffer.buffer
                       offset:vertexBuffer.offset
-                     atIndex:AAPLMeshVertexBuffer];
+                     atIndex:PSMeshVertexBuffer];
     
     [encoder drawIndexedPrimitives:_submesh.primitiveType
                         indexCount:_submesh.indexCount

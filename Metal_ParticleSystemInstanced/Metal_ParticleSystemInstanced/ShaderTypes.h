@@ -9,18 +9,17 @@
 #ifndef ShaderTypes_h
 #define ShaderTypes_h
 
-
 #include <simd/simd.h>
 
-enum AAPLVertexAttributes {
-    AAPLVertexAttributePosition = 0,
-    AAPLVertexAttributeNormal   = 1,
+enum PSVertexAttributes {
+    PSVertexAttributePosition = 0,
+    PSVertexAttributeNormal   = 1,
 };
 
-enum AAPLBufferIndex  {
-    AAPLMeshVertexBuffer      = 0,
-    AAPLFrameUniformBuffer    = 1,
-    AAPLParticleBuffer        = 2,
+enum PSBufferIndex  {
+    PSMeshVertexBuffer      = 0,
+    PSFrameUniformBuffer    = 1,
+    PSParticleBuffer        = 2,
 };
 
 #ifdef __cplusplus

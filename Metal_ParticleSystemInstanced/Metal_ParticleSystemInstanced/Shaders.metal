@@ -13,8 +13,8 @@
 using namespace metal;
 
 struct VertexInput {
-    float3 position [[attribute(AAPLVertexAttributePosition)]];
-    float3 normal   [[attribute(AAPLVertexAttributeNormal)]];
+    float3 position [[attribute(PSVertexAttributePosition)]];
+    float3 normal   [[attribute(PSVertexAttributeNormal)]];
 };
 
 struct Particle {
@@ -37,8 +37,8 @@ constant float4 materialSpecularColor = float4(1.0, 1.0, 1.0, 1.0);
 constant float  materialShine = 50.0;
 
 vertex ColorInOut vertexFunction(VertexInput in [[stage_in]],
-                                 constant uniforms_t *uniforms[[buffer(AAPLFrameUniformBuffer)]],
-                                 constant Particle *particles[[buffer(AAPLParticleBuffer)]],
+                                 constant uniforms_t *uniforms[[buffer(PSFrameUniformBuffer)]],
+                                 constant Particle *particles[[buffer(PSParticleBuffer)]],
                                  uint iid [[instance_id]])
 {
     float4x4 model_matrix = particles[iid].modelMatrix;
