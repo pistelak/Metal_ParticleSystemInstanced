@@ -39,6 +39,20 @@
     return self;
 }
 
+- (void)setContentScaleFactor:(CGFloat)contentScaleFactor
+{
+    [super setContentScaleFactor:contentScaleFactor];
+    
+    _layerSizeDidUpdate = YES;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    _layerSizeDidUpdate = YES;
+}
+
 + (Class) layerClass
 {
     return [CAMetalLayer class];
@@ -77,6 +91,8 @@
             depthAttachment.clearDepth = 1.0;
         }
     }
+    
+    _renderPassDescriptor.stencilAttachment = nil;
 }
 
 - (MTLRenderPassDescriptor *)renderPassDescriptor
@@ -125,18 +141,5 @@
     }
 }
 
-- (void)setContentScaleFactor:(CGFloat)contentScaleFactor
-{
-    [super setContentScaleFactor:contentScaleFactor];
-    
-    _layerSizeDidUpdate = YES;
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    _layerSizeDidUpdate = YES;
-}
 
 @end

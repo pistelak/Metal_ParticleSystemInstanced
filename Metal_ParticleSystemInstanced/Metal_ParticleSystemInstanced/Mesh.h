@@ -16,7 +16,7 @@
                             device:(id<MTLDevice>)device
             andMTLVertexDescriptor:(MTLVertexDescriptor *) vertexDescriptor NS_DESIGNATED_INITIALIZER;
 
-- (void)renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder;
+- (void)renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder instanceCount:(NSUInteger) instanceCount;
 
 @property (nonatomic, copy, readonly) NSString *modelName;
 

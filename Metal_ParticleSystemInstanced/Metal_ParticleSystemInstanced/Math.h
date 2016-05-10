@@ -47,8 +47,8 @@ namespace MathUtils
     static inline simd::float3 randomVector3(float min, float max, float offset)
     {
         return (simd::float3) { randomNumber(min, max, offset),
-            randomNumber(min, max, offset),
-            randomNumber(min, max, offset) };
+                                randomNumber(min, max, offset),
+                                randomNumber(min, max, offset) };
     }
     
     static inline simd::float3 ballRandomVector3(float radius)

@@ -64,19 +64,21 @@
     return mdlVertexDescriptor;
 }
 
-- (void)renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder
+- (void) renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder instanceCount:(NSUInteger)instanceCount
 {
     MTKMeshBuffer *vertexBuffer = [_mesh.vertexBuffers firstObject];
     
     [encoder setVertexBuffer:vertexBuffer.buffer
                       offset:vertexBuffer.offset
                      atIndex:AAPLMeshVertexBuffer];
-
+    
     [encoder drawIndexedPrimitives:_submesh.primitiveType
                         indexCount:_submesh.indexCount
                          indexType:_submesh.indexType
                        indexBuffer:_submesh.indexBuffer.buffer
-                 indexBufferOffset:_submesh.indexBuffer.offset];
+                 indexBufferOffset:_submesh.indexBuffer.offset
+                     instanceCount:instanceCount];
+
 }
 
 @end

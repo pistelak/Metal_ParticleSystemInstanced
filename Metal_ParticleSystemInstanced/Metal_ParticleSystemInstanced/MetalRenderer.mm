@@ -10,14 +10,13 @@
 #import "ShaderTypes.h"
 #import "Math.h"
 
-const unsigned kNumberOfInflightBuffers = 3;
+#import "Particles.h"
+
+static const unsigned kInFlightCommandBuffers = 3;
 
 @implementation MetalRenderer
 {
     id<MTLLibrary> _defaultLibrary;
-    NSString *_vertexShaderName;
-    NSString *_fragmentShaderName;
-    
     id<MTLCommandQueue> _commandQueue;
     
     id<MTLDepthStencilState> _depthState;
@@ -28,7 +27,8 @@ const unsigned kNumberOfInflightBuffers = 3;
     
     dispatch_semaphore_t _inflight_semaphore;
     
-    id<MTLBuffer> _uniformBuffer;
+    id<MTLBuffer> _particleBuffer[kInFlightCommandBuffers];
+    id<MTLBuffer> _uniformBuffer[kInFlightCommandBuffers];
     NSInteger _currentBufferIndex;
     
     // Mesh
@@ -37,7 +37,15 @@ const unsigned kNumberOfInflightBuffers = 3;
     simd::float4x4 _modelMatrix;
     simd::float4x4 _viewMatrix;
     simd::float4x4 _projectionMatrix;
+    
+    NSTimer *_timer;
+    
+    std::vector<particle_t> _particles;
+    NSUInteger _particleCount;
 }
+
+#pragma mark -
+#pragma mark Init
 
 - (instancetype) initWithVertexShader:(NSString *) vertexShaderName
                     andFragmentShader:(NSString *) fragmentShaderName
@@ -45,70 +53,100 @@ const unsigned kNumberOfInflightBuffers = 3;
     self = [super init];
     if (self) {
         
-        _vertexShaderName = vertexShaderName;
-        _fragmentShaderName = fragmentShaderName;
         _depthPixelFormat = MTLPixelFormatDepth32Float;
         
         _device = MTLCreateSystemDefaultDevice();
         _commandQueue = [_device newCommandQueue];
         _defaultLibrary = [_device newDefaultLibrary];
         
-        _inflight_semaphore = dispatch_semaphore_create(kNumberOfInflightBuffers);
+        _inflight_semaphore = dispatch_semaphore_create(kInFlightCommandBuffers);
         _currentBufferIndex = 0;
         
-        [self initializePipelineStateWithVertexShader:_vertexShaderName andFragmentShader:_fragmentShaderName];
+        [self initializePipelineStateWithVertexShader:vertexShaderName andFragmentShader:fragmentShaderName];
         [self initializeDataBuffers];
+        
+        _particleCount = kBatchSize;
+        
+        const NSTimeInterval timeInterval = 1.0; // in seconds
+        _timer = [NSTimer scheduledTimerWithTimeInterval:timeInterval
+                                                  target:self
+                                                selector:@selector(increaseParticleCount:)
+                                                userInfo:nil
+                                                 repeats:YES];
     }
-    
+
     return self;
+}
+
+- (void) increaseParticleCount:(NSTimer *) timer
+{
+    if ((_particleCount + kBatchSize) <= kMaximumNumberOfParticles) {
+        _particleCount += kBatchSize;
+    } else {
+        [_timer invalidate];
+    }
 }
 
 - (void)initializePipelineStateWithVertexShader:(NSString*)vertexShaderName andFragmentShader:(NSString*)fragmentShaderName
 {
     // shaders
     id <MTLFunction> vertexProgram = [_defaultLibrary newFunctionWithName:vertexShaderName];
-    if(!vertexProgram) {
-        assert(0);
-    }
-    
     id <MTLFunction> fragmentProgram = [_defaultLibrary newFunctionWithName:fragmentShaderName];
-    if(!fragmentProgram) {
+    
+    if (!vertexProgram || !fragmentProgram) {
         assert(0);
     }
     
-    // vertex descriptor
-    _mtlVertexDescriptor = [[MTLVertexDescriptor alloc] init];
-    _mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].format = MTLVertexFormatFloat3;
-    _mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].offset = 0;
+    _depthState = [_device newDepthStencilStateWithDescriptor:[self depthStateDescriptor]];
     
-    _mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].format = MTLVertexFormatFloat3;
-    _mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].offset = 12;
-    
-    _mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stride = 24;
-    _mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stepRate = 1;
-    _mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stepFunction = MTLVertexStepFunctionPerVertex;
-    
-    // depth
-    MTLDepthStencilDescriptor *depthStateDesc = [[MTLDepthStencilDescriptor alloc] init];
-    depthStateDesc.depthCompareFunction = MTLCompareFunctionLess;
-    depthStateDesc.depthWriteEnabled = YES;
-    _depthState = [_device newDepthStencilStateWithDescriptor:depthStateDesc];
     if (!_depthState) {
         assert(0);
     }
     
-    // pipeline state
-    NSError *error;
+    _mtlVertexDescriptor = [self vertexDescriptor];
+    
+    // pipeline state descriptor
     MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    [pipelineStateDescriptor setVertexFunction:vertexProgram];
-    [pipelineStateDescriptor setFragmentFunction:fragmentProgram];
-    [pipelineStateDescriptor setVertexDescriptor:_mtlVertexDescriptor];
-    pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+    pipelineStateDescriptor.vertexFunction = vertexProgram;
+    pipelineStateDescriptor.fragmentFunction = fragmentProgram;
+    pipelineStateDescriptor.vertexDescriptor = _mtlVertexDescriptor;
+    
     pipelineStateDescriptor.depthAttachmentPixelFormat = _depthPixelFormat;
+    pipelineStateDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
+    pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+    
+    NSError *error;
     _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
     if (!_pipelineState || error) {
         assert(0);
     }
+}
+
+- (MTLDepthStencilDescriptor *) depthStateDescriptor
+{
+    MTLDepthStencilDescriptor *depthStateDesc = [[MTLDepthStencilDescriptor alloc] init];
+    depthStateDesc.depthCompareFunction = MTLCompareFunctionLess;
+    depthStateDesc.depthWriteEnabled = YES;
+    
+    return depthStateDesc;
+}
+
+- (MTLVertexDescriptor *) vertexDescriptor
+{
+    MTLVertexDescriptor *mtlVertexDescriptor = [[MTLVertexDescriptor alloc] init];
+    mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].format = MTLVertexFormatFloat3;
+    mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].offset = 0;
+    mtlVertexDescriptor.attributes[AAPLVertexAttributePosition].bufferIndex = AAPLMeshVertexBuffer;
+    
+    mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].format = MTLVertexFormatFloat3;
+    mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].offset = 12;
+    mtlVertexDescriptor.attributes[AAPLVertexAttributeNormal].bufferIndex = AAPLMeshVertexBuffer;
+    
+    mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stride = 24;
+    mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stepRate = 1;
+    mtlVertexDescriptor.layouts[AAPLMeshVertexBuffer].stepFunction = MTLVertexStepFunctionPerVertex;
+    
+    return mtlVertexDescriptor;
 }
 
 - (void) initializeDataBuffers
@@ -116,15 +154,25 @@ const unsigned kNumberOfInflightBuffers = 3;
     // model object
     _mesh = [[Mesh alloc] initWithModelName:@"sphere" device:_device andMTLVertexDescriptor:_mtlVertexDescriptor];
     
-    // uniform buffer
-    _uniformBuffer = [_device newBufferWithLength:sizeof(uniforms_t) * kNumberOfInflightBuffers
-                                          options:MTLResourceCPUCacheModeDefaultCache];
-    _uniformBuffer.label = @"Uniforms";
+    for (unsigned i = 0; i < kInFlightCommandBuffers; ++i) {
+        
+        _uniformBuffer[i] = [_device newBufferWithLength:sizeof(uniforms_t) options:MTLResourceCPUCacheModeDefaultCache];
+        _uniformBuffer[i].label = [NSString stringWithFormat:@"UniformBuffer%i", i];
+        
+        _particleBuffer[i] = [_device newBufferWithLength:sizeof(simd::float4x4) * kMaximumNumberOfParticles options:MTLResourceCPUCacheModeDefaultCache];
+        _particleBuffer[i].label = [NSString stringWithFormat:@"ParticleBuffer%i", i];
+    }
 }
+
+#pragma mark -
+#pragma mark View controller and view delegates
 
 - (void)render:(View *)view
 {
     dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER);
+    
+    [self updateUniformBuffer];
+    NSUInteger instanceCount = [self updateParticleBuffer];
     
     id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     
@@ -134,36 +182,35 @@ const unsigned kNumberOfInflightBuffers = 3;
         
         [renderEncoder setRenderPipelineState:_pipelineState];
         [renderEncoder setDepthStencilState:_depthState];
-        [renderEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
-        [renderEncoder setCullMode:MTLCullModeBack];
         
-        // render
-        const NSUInteger uniformBufferOffset = sizeof(uniforms_t) * _currentBufferIndex;
-        [renderEncoder setVertexBuffer:_uniformBuffer offset:uniformBufferOffset atIndex:AAPLFrameUniformBuffer];
+        [renderEncoder pushDebugGroup:@"Setting buffers"];
         
-        [_mesh renderWithEncoder:renderEncoder];
+        [renderEncoder setVertexBuffer:_uniformBuffer[_currentBufferIndex] offset:0 atIndex:AAPLFrameUniformBuffer];
+        [renderEncoder setVertexBuffer:_particleBuffer[_currentBufferIndex] offset:0 atIndex:AAPLParticleBuffer];
+        
+        [renderEncoder popDebugGroup];
+        
+        [renderEncoder pushDebugGroup:@"Rendering model mesh"];
+        
+        [_mesh renderWithEncoder:renderEncoder instanceCount:instanceCount];
+        
+        [renderEncoder popDebugGroup];
         
         [renderEncoder endEncoding];
         
         __block dispatch_semaphore_t block_semaphore = _inflight_semaphore;
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
-            _currentBufferIndex = (_currentBufferIndex + 1) % kNumberOfInflightBuffers;
             dispatch_semaphore_signal(block_semaphore);
         }];
         
         [commandBuffer presentDrawable:view.currentDrawable];
         [commandBuffer commit];
+        
+        _currentBufferIndex = (_currentBufferIndex + 1) % kInFlightCommandBuffers;
     }
     else {
         dispatch_semaphore_signal(_inflight_semaphore);
     }
-}
-
-- (void)reshape:(View *)view
-{
-    _projectionMatrix = MathUtils::projectionMatrix(view.bounds.size.width, view.bounds.size.height);
-    
-    [self updateUniformBuffer];
 }
 
 - (void)update:(ViewController *)controller
@@ -171,22 +218,32 @@ const unsigned kNumberOfInflightBuffers = 3;
     _angle += [controller timeSinceLastDraw] * 0.1;
     simd::float3 cameraPosition = { sinf(_angle) * 10.f, 2.5f, cosf(_angle) * 10.f };
     _viewMatrix = MathUtils::lookAt(cameraPosition);
-    
-    [self updateUniformBuffer];
 }
+
+- (void)reshape:(View *)view
+{
+    _projectionMatrix = MathUtils::projectionMatrix(view.bounds.size.width, view.bounds.size.height);
+}
+
+#pragma mark -
+#pragma mark Buffers
 
 - (void) updateUniformBuffer
 {
-    uniforms_t uniforms;
-    uniforms.modelMatrix = matrix_identity_float4x4;
-    uniforms.viewMatrix = _viewMatrix;
-    uniforms.projectionMatrix = _projectionMatrix;
+    uniforms_t *uniforms = (uniforms_t *) [_uniformBuffer[_currentBufferIndex] contents];
+    uniforms->viewMatrix = _viewMatrix;
+    uniforms->projectionMatrix = _projectionMatrix;
+}
+
+- (NSUInteger) updateParticleBuffer
+{
+    std::vector<simd::float4x4> particles = updateParticles(&_particles, (uint32_t) _particleCount);
     
-    const size_t offset = sizeof(uniforms_t) * _currentBufferIndex;
+    memcpy((particle_t *) [_particleBuffer[_currentBufferIndex] contents],
+           &particles[0],
+           sizeof(simd::float4x4) * particles.size());
     
-    // I hate c++
-    char *uniformBufferBgn = (char *) [_uniformBuffer contents];
-    memcpy(uniformBufferBgn + offset, &uniforms, sizeof(uniforms));
+    return particles.size();
 }
 
 @end

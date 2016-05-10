@@ -9,6 +9,7 @@
 #ifndef ShaderTypes_h
 #define ShaderTypes_h
 
+
 #include <simd/simd.h>
 
 enum AAPLVertexAttributes {
@@ -19,6 +20,7 @@ enum AAPLVertexAttributes {
 enum AAPLBufferIndex  {
     AAPLMeshVertexBuffer      = 0,
     AAPLFrameUniformBuffer    = 1,
+    AAPLParticleBuffer        = 2,
 };
 
 #ifdef __cplusplus
@@ -27,9 +29,9 @@ enum AAPLBufferIndex  {
  * @brief Shared data types between CPU code and metal shader code
  */
 typedef struct {
-    simd::float4x4 modelMatrix;
     simd::float4x4 viewMatrix;
     simd::float4x4 projectionMatrix;
+    simd::float4x4 spacing;
 } uniforms_t;
 
 #endif
