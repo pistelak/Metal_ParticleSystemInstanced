@@ -21,13 +21,14 @@ typedef struct {
 } particle_t;
 
 static const uint32_t kMaximumNumberOfParticles = 10000;
-static const uint32_t kBatchSize = 10;
-static const uint32_t kParticleBufferSize = kMaximumNumberOfParticles * sizeof(particle_t);
+static const uint32_t kBatchSize = 100;
+static const size_t kGPUParticleSize = sizeof(particleGPU_t);
+static const size_t kParticleBufferSize = kGPUParticleSize * kMaximumNumberOfParticles * kInFlightCommandBuffers;
 
 @implementation ParticleSystem
 {
     NSUInteger _currentBufferIndex;
-    id<MTLBuffer> _particleBuffer[kInFlightCommandBuffers];
+    id<MTLBuffer> _particleBuffer;
     
     particle_t _particles[kMaximumNumberOfParticles];
     simd::float4x4 _modelMatrices[kMaximumNumberOfParticles];
@@ -93,11 +94,8 @@ static inline float particleScale() {
 
 - (void) createParticleBufferOnDevice:(id<MTLDevice>) device
 {
-    for (unsigned i = 0; i < kInFlightCommandBuffers; ++i) {
-        
-        _particleBuffer[i] = [device newBufferWithLength:kParticleBufferSize options:MTLResourceCPUCacheModeDefaultCache];
-        _particleBuffer[i].label = [NSString stringWithFormat:@"ParticleBuffer%i", i];
-    }
+    _particleBuffer = [device newBufferWithLength:kParticleBufferSize options:MTLResourceCPUCacheModeDefaultCache];
+    _particleBuffer.label = @"ParticleBuffer";
 }
 
 - (void) increaseParticleCount:(NSTimer *) timer
@@ -115,16 +113,18 @@ static inline float particleScale() {
     
     NSUInteger particleCount = _particleCount;
     
-    id<MTLBuffer> currentParticleBuffer = _particleBuffer[_currentBufferIndex];
+    size_t offset = _currentBufferIndex * kGPUParticleSize * kMaximumNumberOfParticles;
+    simd::float4x4 *ptrData = (simd::float4x4 *) ((uintptr_t) [_particleBuffer contents] + offset);
     
-    memcpy([currentParticleBuffer contents] , &_modelMatrices[0], particleCount * sizeof(simd::float4x4));
+    memcpy(ptrData, &_modelMatrices[0], particleCount * sizeof(simd::float4x4));
     
     return particleCount;
 }
 
 - (void) encode:(id<MTLRenderCommandEncoder>)encoder
 {
-    [encoder setVertexBuffer:_particleBuffer[_currentBufferIndex] offset:0 atIndex:PSParticleBuffer];
+    size_t offset = _currentBufferIndex * kGPUParticleSize * kMaximumNumberOfParticles;
+    [encoder setVertexBuffer:_particleBuffer offset:offset atIndex:PSParticleBuffer];
     
     _currentBufferIndex = (_currentBufferIndex + 1) % kInFlightCommandBuffers;
 }
