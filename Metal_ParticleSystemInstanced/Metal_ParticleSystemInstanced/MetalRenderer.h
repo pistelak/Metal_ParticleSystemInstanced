@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static const unsigned kInFlightCommandBuffers = 3;
 
-@interface MetalRenderer : NSObject <ViewDelegate, ViewControllerDelegate>
+@interface MetalRenderer : NSObject <AAPLViewDelegate, ViewControllerDelegate>
 
 - (nullable instancetype) init NS_UNAVAILABLE;
 
@@ -24,7 +24,10 @@ static const unsigned kInFlightCommandBuffers = 3;
                              andFragmentShader:(NSString *) fragmentShaderName NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic) id<MTLDevice> device;
+
 @property (nonatomic) MTLPixelFormat depthPixelFormat;
+@property (nonatomic) MTLPixelFormat stencilPixelFormat;
+@property (nonatomic) NSUInteger sampleCount;
 
 @end
 

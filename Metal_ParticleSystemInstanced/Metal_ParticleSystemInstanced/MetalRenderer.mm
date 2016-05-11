@@ -46,6 +46,8 @@
     if (self) {
         
         _depthPixelFormat = MTLPixelFormatDepth32Float;
+        _stencilPixelFormat = MTLPixelFormatInvalid;
+        _sampleCount = 1;
         
         _device = MTLCreateSystemDefaultDevice();
         _commandQueue = [_device newCommandQueue];
@@ -139,7 +141,7 @@
 #pragma mark -
 #pragma mark View controller and view delegates
 
-- (void)render:(View *)view
+- (void)render:(AAPLView *)view
 {
     dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER);
     
@@ -153,6 +155,7 @@
         
         [renderEncoder setRenderPipelineState:_pipelineState];
         [renderEncoder setDepthStencilState:_depthState];
+        [renderEncoder setCullMode:MTLCullModeBack];
         
         [renderEncoder pushDebugGroup:@"Setting buffers"];
         
@@ -196,9 +199,9 @@
     [_particleSystem update];
 }
 
-- (void)reshape:(View *)view
+- (void)reshape:(AAPLView *)view
 {
-    _projectionMatrix = MathUtils::projectionMatrix(view.bounds.size.width, view.bounds.size.height);
+    _projectionMatrix = MathUtils::projectionMatrix(view.drawableSize.width, view.drawableSize.height);
 }
 
 #pragma mark -

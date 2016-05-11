@@ -32,6 +32,10 @@ typedef struct {
     simd::float4x4 projectionMatrix;
 } uniforms_t;
 
+typedef struct {
+    simd::float4x4 modelMatrix;
+} particleGPU_t;
+
 #endif
 
 #endif /* ShaderTypes_h */

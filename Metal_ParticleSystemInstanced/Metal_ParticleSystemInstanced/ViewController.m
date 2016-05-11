@@ -38,7 +38,7 @@
 
 - (void) loadView
 {
-    self.view = [[View alloc] init];
+    self.view = [[AAPLView alloc] init];
 }
 
 - (void) viewDidLoad
@@ -47,18 +47,19 @@
     
     _renderer = [[MetalRenderer alloc] initWithVertexShader:@"vertexFunction" andFragmentShader:@"fragmentFunction"];
     
-    View *metalView = (View *) self.view;
+    AAPLView *metalView = (AAPLView *) self.view;
     
-    assert([metalView isKindOfClass:[View class]]);
+    assert([metalView isKindOfClass:[AAPLView class]]);
     
     metalView.contentScaleFactor = [UIScreen mainScreen].nativeScale;
     metalView.depthPixelFormat = _renderer.depthPixelFormat;
+    metalView.stencilPixelFormat = _renderer.stencilPixelFormat;
+    metalView.sampleCount = _renderer.sampleCount;
     metalView.delegate = _renderer;
     self.delegate = _renderer;
     
     [self dispatchGameLoop];
 }
-
 
 - (BOOL) prefersStatusBarHidden
 {
@@ -89,7 +90,7 @@
         _timeSinceLastDrawPreviousTime = currentTime;
     }
     
-    [(View *) self.view display];
+    [(AAPLView *) self.view display];
 }
 
 @end

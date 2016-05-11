@@ -17,10 +17,6 @@ struct VertexInput {
     float3 normal   [[attribute(PSVertexAttributeNormal)]];
 };
 
-struct Particle {
-    float4x4 modelMatrix;
-};
-
 struct ColorInOut {
     float4 position [[position]];
     float3 normal_cameraspace;
@@ -38,11 +34,12 @@ constant float  materialShine = 50.0;
 
 vertex ColorInOut vertexFunction(VertexInput in [[stage_in]],
                                  constant uniforms_t *uniforms[[buffer(PSFrameUniformBuffer)]],
-                                 constant Particle *particles[[buffer(PSParticleBuffer)]],
+                                 constant particleGPU_t *particles[[buffer(PSParticleBuffer)]],
                                  uint iid [[instance_id]])
 {
     float4x4 model_matrix = particles[iid].modelMatrix;
-    float4x4 model_view_matrix = uniforms->viewMatrix * model_matrix;
+    float4x4 view_matrix = uniforms->viewMatrix;
+    float4x4 model_view_matrix = view_matrix * model_matrix;
     float4x4 mvp_matrix = uniforms->projectionMatrix * model_view_matrix;
     
     ColorInOut out;
@@ -56,11 +53,11 @@ vertex ColorInOut vertexFunction(VertexInput in [[stage_in]],
     out.normal_cameraspace = (normalize(model_view_matrix * float4(normal, 0.0f))).xyz;
     
     // Calculate the view vector from the perspective of the camera
-    float3 vertex_position_cameraspace = ( uniforms->viewMatrix * model_matrix * vertex_position_modelspace ).xyz;
+    float3 vertex_position_cameraspace = ( model_view_matrix * vertex_position_modelspace ).xyz;
     out.eye_direction_cameraspace = float3(0.0f) - vertex_position_cameraspace;
     
     // Calculate the direction of the light from the position of the camera
-    float3 light_position_cameraspace = ( uniforms->viewMatrix * float4(light_position,1.0f)).xyz;
+    float3 light_position_cameraspace = ( view_matrix * float4(light_position,1.0f)).xyz;
     out.light_direction_cameraspace = light_position_cameraspace + out.eye_direction_cameraspace;
     
     return out;
