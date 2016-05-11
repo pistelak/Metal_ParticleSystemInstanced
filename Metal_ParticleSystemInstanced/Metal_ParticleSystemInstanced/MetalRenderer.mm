@@ -124,6 +124,9 @@
     mtlVertexDescriptor.layouts[PSMeshVertexBuffer].stepRate = 1;
     mtlVertexDescriptor.layouts[PSMeshVertexBuffer].stepFunction = MTLVertexStepFunctionPerVertex;
     
+    mtlVertexDescriptor.layouts[PSFrameUniformBuffer].stepFunction = MTLVertexStepFunctionConstant;
+    mtlVertexDescriptor.layouts[PSParticleBuffer].stepFunction = MTLVertexStepFunctionPerInstance;
+    
     return mtlVertexDescriptor;
 }
 

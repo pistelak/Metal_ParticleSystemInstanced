@@ -66,6 +66,8 @@
 
 - (void) renderWithEncoder:(id<MTLRenderCommandEncoder>)encoder instanceCount:(NSUInteger)instanceCount
 {
+    [encoder pushDebugGroup:@"Rendering model mesh"];
+    
     MTKMeshBuffer *vertexBuffer = [_mesh.vertexBuffers firstObject];
     
     [encoder setVertexBuffer:vertexBuffer.buffer
@@ -79,6 +81,7 @@
                  indexBufferOffset:_submesh.indexBuffer.offset
                      instanceCount:instanceCount];
 
+    [encoder popDebugGroup];
 }
 
 @end

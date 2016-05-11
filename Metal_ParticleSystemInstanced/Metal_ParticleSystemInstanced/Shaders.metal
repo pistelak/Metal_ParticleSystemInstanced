@@ -32,10 +32,10 @@ constant float4 materialDiffuseColor = float4(0.4, 0.4, 0.4, 1.0);
 constant float4 materialSpecularColor = float4(1.0, 1.0, 1.0, 1.0);
 constant float  materialShine = 50.0;
 
-vertex ColorInOut vertexFunction(VertexInput in [[stage_in]],
-                                 constant uniforms_t *uniforms[[buffer(PSFrameUniformBuffer)]],
-                                 constant particleGPU_t *particles[[buffer(PSParticleBuffer)]],
-                                 uint iid [[instance_id]])
+vertex ColorInOut vertexFunction(VertexInput              in           [[stage_in]],
+                                 constant uniforms_t*     uniforms     [[buffer(PSFrameUniformBuffer)]],
+                                 device particleGPU_t*    particles    [[buffer(PSParticleBuffer)]],
+                                 uint                     iid          [[instance_id]])
 {
     float4x4 model_matrix = particles[iid].modelMatrix;
     float4x4 view_matrix = uniforms->viewMatrix;
