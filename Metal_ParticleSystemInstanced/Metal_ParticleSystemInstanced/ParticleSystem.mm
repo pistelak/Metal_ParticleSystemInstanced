@@ -83,10 +83,7 @@ static inline float particleScale() {
 
 - (void) initializeModelMatrices
 {
-    /**
-     * Pri startu programu nastavim vsem maticim vychozi scale,
-     * ktery modifikuje pouze diagonalu matice
-     */
+    // Set default scale to all matrices
     for (uint32_t i = 0; i < kMaximumNumberOfParticles; ++i) {
         _modelMatrices[i] = AAPL::scale(particleScale());
     }
@@ -107,26 +104,15 @@ static inline float particleScale() {
     }
 }
 
-- (NSUInteger) upload
-{
-    dispatch_group_wait(_dispatchGroup, DISPATCH_TIME_FOREVER);
-    
-    NSUInteger particleCount = _particleCount;
-    
-    size_t offset = _currentBufferIndex * kGPUParticleSize * kMaximumNumberOfParticles;
-    simd::float4x4 *ptrData = (simd::float4x4 *) ((uintptr_t) [_particleBuffer contents] + offset);
-    
-    memcpy(ptrData, &_modelMatrices[0], particleCount * sizeof(simd::float4x4));
-    
-    return particleCount;
-}
+#pragma mark -
 
-- (void) encode:(id<MTLRenderCommandEncoder>)encoder
+- (void) update
 {
-    size_t offset = _currentBufferIndex * kGPUParticleSize * kMaximumNumberOfParticles;
-    [encoder setVertexBuffer:_particleBuffer offset:offset atIndex:PSParticleBuffer];
+    __block ParticleSystem *blockSelf = self;
     
-    _currentBufferIndex = (_currentBufferIndex + 1) % kInFlightCommandBuffers;
+    dispatch_group_async(_dispatchGroup, _bgQueue, ^{
+        [blockSelf _update];
+    });
 }
 
 - (void) _update
@@ -146,28 +132,32 @@ static inline float particleScale() {
             _particles[i].vec = _particles[i].vec * 0.8;
         }
 
-        /**
-         * Diky tomu ze je scale nastaveny v dobe inicializace muzu ted upravit
-         * pouze jeden ze sloupcu matice a nastavit tak pozici modelu  
-         * Proc? usetreni nasobeni matic
-         */
         _modelMatrices[i].columns[3].xyz = _particles[i].position;
     }
 }
 
-- (void) update
+- (NSUInteger) upload
 {
-    /**
-     * Update dat se provede ve fronte na pozadi
-     * I kdyz je objekt dostane zpravu upload, tak ceka na dokonceni operace upload
-     */
-    __block ParticleSystem *blockSelf = self;
-
-    dispatch_group_async(_dispatchGroup, _bgQueue, ^{
-        [blockSelf _update];
-    });
-
+    // Wait for update operation
+    dispatch_group_wait(_dispatchGroup, DISPATCH_TIME_FOREVER);
+    
+    NSUInteger particleCount = _particleCount;
+    
+    size_t offset = _currentBufferIndex * kGPUParticleSize * kMaximumNumberOfParticles;
+    simd::float4x4 *ptrData = (simd::float4x4 *) ((uintptr_t) [_particleBuffer contents] + offset);
+    
+    // Copy data to CPU/GPU buffer
+    memcpy(ptrData, &_modelMatrices[0], particleCount * sizeof(simd::float4x4));
+    
+    return particleCount;
 }
 
+- (void) encode:(id<MTLRenderCommandEncoder>)encoder
+{
+    size_t offset = _currentBufferIndex * kGPUParticleSize * kMaximumNumberOfParticles;
+    [encoder setVertexBuffer:_particleBuffer offset:offset atIndex:PSParticleBuffer];
+    
+    _currentBufferIndex = (_currentBufferIndex + 1) % kInFlightCommandBuffers;
+}
 
 @end

@@ -10,6 +10,10 @@
 #import "AppDelegate.h"
 
 int main(int argc, char * argv[]) {
+    
+    /* initialize random seed: */
+    srand ((unsigned int) time(NULL));
+    
     @autoreleasepool {
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
     }
