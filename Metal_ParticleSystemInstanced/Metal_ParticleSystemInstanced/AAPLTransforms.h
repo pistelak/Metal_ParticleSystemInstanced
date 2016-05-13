@@ -26,6 +26,8 @@ namespace AAPL
     
     simd::float4x4 scale(const simd::float3& s);
     
+    simd::float4x4 scale(const float xyz);
+    
     simd::float4x4 translate(const float& x,
                              const float& y,
                              const float& z);

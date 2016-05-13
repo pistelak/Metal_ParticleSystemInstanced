@@ -9,10 +9,8 @@
 #import "MetalRenderer.h"
 #import "ShaderTypes.h"
 #import "Math.h"
-
-#import "Particles.h"
-
-static const unsigned kInFlightCommandBuffers = 3;
+#import "ParticleSystem.h"
+#import "Uniforms.h"
 
 @implementation MetalRenderer
 {
@@ -20,28 +18,15 @@ static const unsigned kInFlightCommandBuffers = 3;
     id<MTLCommandQueue> _commandQueue;
     
     id<MTLDepthStencilState> _depthState;
-    id<MTLRenderPipelineState> _pipelineState;
+    id<MTLRenderPipelineState> _pipelineStateObject;
     MTLVertexDescriptor *_mtlVertexDescriptor;
-    
-    float _angle;
     
     dispatch_semaphore_t _inflight_semaphore;
     
-    id<MTLBuffer> _particleBuffer[kInFlightCommandBuffers];
-    id<MTLBuffer> _uniformBuffer[kInFlightCommandBuffers];
-    NSInteger _currentBufferIndex;
-    
-    // Mesh
     Mesh *_mesh;
     
-    simd::float4x4 _modelMatrix;
-    simd::float4x4 _viewMatrix;
-    simd::float4x4 _projectionMatrix;
-    
-    NSTimer *_timer;
-    
-    std::vector<particle_t> _particles;
-    NSUInteger _particleCount;
+    Uniforms *_uniforms;
+    ParticleSystem *_particleSystem;
 }
 
 #pragma mark -
@@ -54,48 +39,31 @@ static const unsigned kInFlightCommandBuffers = 3;
     if (self) {
         
         _depthPixelFormat = MTLPixelFormatDepth32Float;
+        _stencilPixelFormat = MTLPixelFormatInvalid;
+        _sampleCount = 1;
         
         _device = MTLCreateSystemDefaultDevice();
         _commandQueue = [_device newCommandQueue];
         _defaultLibrary = [_device newDefaultLibrary];
         
         _inflight_semaphore = dispatch_semaphore_create(kInFlightCommandBuffers);
-        _currentBufferIndex = 0;
         
         [self initializePipelineStateWithVertexShader:vertexShaderName andFragmentShader:fragmentShaderName];
-        [self initializeDataBuffers];
         
-        _particleCount = kBatchSize;
+        _particleSystem = [[ParticleSystem alloc] initWithDevice:_device];
+        _uniforms = [[Uniforms alloc] initWithDevice:_device];
         
-        const NSTimeInterval timeInterval = 1.0; // in seconds
-        _timer = [NSTimer scheduledTimerWithTimeInterval:timeInterval
-                                                  target:self
-                                                selector:@selector(increaseParticleCount:)
-                                                userInfo:nil
-                                                 repeats:YES];
+        _mesh = [[Mesh alloc] initWithModelName:@"sphere" device:_device andMTLVertexDescriptor:_mtlVertexDescriptor];
     }
 
     return self;
 }
 
-- (void) increaseParticleCount:(NSTimer *) timer
-{
-    if ((_particleCount + kBatchSize) <= kMaximumNumberOfParticles) {
-        _particleCount += kBatchSize;
-    } else {
-        [_timer invalidate];
-    }
-}
-
 - (void)initializePipelineStateWithVertexShader:(NSString*)vertexShaderName andFragmentShader:(NSString*)fragmentShaderName
 {
     // shaders
-    id <MTLFunction> vertexProgram = [_defaultLibrary newFunctionWithName:vertexShaderName];
-    id <MTLFunction> fragmentProgram = [_defaultLibrary newFunctionWithName:fragmentShaderName];
-    
-    if (!vertexProgram || !fragmentProgram) {
-        assert(0);
-    }
+    id <MTLFunction> vertexProgram = _newFunctionFromLibrary(_defaultLibrary, vertexShaderName);
+    id <MTLFunction> fragmentProgram = _newFunctionFromLibrary(_defaultLibrary, fragmentShaderName);
     
     _depthState = [_device newDepthStencilStateWithDescriptor:[self depthStateDescriptor]];
     
@@ -105,7 +73,6 @@ static const unsigned kInFlightCommandBuffers = 3;
     
     _mtlVertexDescriptor = [self vertexDescriptor];
     
-    // pipeline state descriptor
     MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     pipelineStateDescriptor.vertexFunction = vertexProgram;
     pipelineStateDescriptor.fragmentFunction = fragmentProgram;
@@ -115,11 +82,7 @@ static const unsigned kInFlightCommandBuffers = 3;
     pipelineStateDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
     pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
     
-    NSError *error;
-    _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-    if (!_pipelineState || error) {
-        assert(0);
-    }
+    _pipelineStateObject = _createPipelineStateObject(_device, pipelineStateDescriptor);
 }
 
 - (MTLDepthStencilDescriptor *) depthStateDescriptor
@@ -146,104 +109,100 @@ static const unsigned kInFlightCommandBuffers = 3;
     mtlVertexDescriptor.layouts[PSMeshVertexBuffer].stepRate = 1;
     mtlVertexDescriptor.layouts[PSMeshVertexBuffer].stepFunction = MTLVertexStepFunctionPerVertex;
     
-    return mtlVertexDescriptor;
-}
-
-- (void) initializeDataBuffers
-{
-    // model object
-    _mesh = [[Mesh alloc] initWithModelName:@"sphere" device:_device andMTLVertexDescriptor:_mtlVertexDescriptor];
+    mtlVertexDescriptor.layouts[PSFrameUniformBuffer].stepFunction = MTLVertexStepFunctionConstant;
+    mtlVertexDescriptor.layouts[PSParticleBuffer].stepFunction = MTLVertexStepFunctionPerInstance;
     
-    for (unsigned i = 0; i < kInFlightCommandBuffers; ++i) {
-        
-        _uniformBuffer[i] = [_device newBufferWithLength:sizeof(uniforms_t) options:MTLResourceCPUCacheModeDefaultCache];
-        _uniformBuffer[i].label = [NSString stringWithFormat:@"UniformBuffer%i", i];
-        
-        _particleBuffer[i] = [_device newBufferWithLength:sizeof(simd::float4x4) * kMaximumNumberOfParticles options:MTLResourceCPUCacheModeDefaultCache];
-        _particleBuffer[i].label = [NSString stringWithFormat:@"ParticleBuffer%i", i];
-    }
+    return mtlVertexDescriptor;
 }
 
 #pragma mark -
 #pragma mark View controller and view delegates
 
-- (void)render:(View *)view
+- (void)render:(AAPLView *)view
 {
     dispatch_semaphore_wait(_inflight_semaphore, DISPATCH_TIME_FOREVER);
     
-    [self updateUniformBuffer];
-    NSUInteger instanceCount = [self updateParticleBuffer];
+    [_uniforms upload];
+    
+    // upload updated particles to CPU/GPU buffer
+    NSUInteger instanceCount = [_particleSystem upload];
     
     id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     
+    // descriptor for current render pass
     MTLRenderPassDescriptor *renderPassDescriptor = view.renderPassDescriptor;
     if (renderPassDescriptor) {
+        
+        // render encoder with current descriptor
         id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         
-        [renderEncoder setRenderPipelineState:_pipelineState];
+        // set pipeline state
+        [renderEncoder setRenderPipelineState:_pipelineStateObject];
         [renderEncoder setDepthStencilState:_depthState];
+        [renderEncoder setCullMode:MTLCullModeBack];
         
         [renderEncoder pushDebugGroup:@"Setting buffers"];
-        
-        [renderEncoder setVertexBuffer:_uniformBuffer[_currentBufferIndex] offset:0 atIndex:PSFrameUniformBuffer];
-        [renderEncoder setVertexBuffer:_particleBuffer[_currentBufferIndex] offset:0 atIndex:PSParticleBuffer];
-        
+        {
+            [_uniforms encode:renderEncoder];
+            [_particleSystem encode:renderEncoder];
+        }
         [renderEncoder popDebugGroup];
         
         [renderEncoder pushDebugGroup:@"Rendering model mesh"];
-        
-        [_mesh renderWithEncoder:renderEncoder instanceCount:instanceCount];
-        
+        {
+            [_mesh renderWithEncoder:renderEncoder instanceCount:instanceCount];
+        }
         [renderEncoder popDebugGroup];
         
         [renderEncoder endEncoding];
         
-        __block dispatch_semaphore_t block_semaphore = _inflight_semaphore;
-        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
-            dispatch_semaphore_signal(block_semaphore);
-        }];
-        
         [commandBuffer presentDrawable:view.currentDrawable];
-        [commandBuffer commit];
-        
-        _currentBufferIndex = (_currentBufferIndex + 1) % kInFlightCommandBuffers;
     }
-    else {
-        dispatch_semaphore_signal(_inflight_semaphore);
-    }
+    
+    __block dispatch_semaphore_t block_semaphore = _inflight_semaphore;
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
+        dispatch_semaphore_signal(block_semaphore);
+    }];
+    
+    [commandBuffer commit];
 }
 
 - (void)update:(ViewController *)controller
 {
-    _angle += [controller timeSinceLastDraw] * 0.1;
-    simd::float3 cameraPosition = { sinf(_angle) * 10.f, 2.5f, cosf(_angle) * 10.f };
-    _viewMatrix = MathUtils::lookAt(cameraPosition);
+    _uniforms.timeSinceLastDraw = [controller timeSinceLastDraw];
+    
+    [_uniforms update];
+    [_particleSystem update];
 }
 
-- (void)reshape:(View *)view
+- (void)reshape:(AAPLView *)view
 {
-    _projectionMatrix = MathUtils::projectionMatrix(view.bounds.size.width, view.bounds.size.height);
+    _uniforms.drawableSize = view.drawableSize;
 }
 
 #pragma mark -
-#pragma mark Buffers
+#pragma mark Utils 
 
-- (void) updateUniformBuffer
+static id<MTLFunction> _newFunctionFromLibrary(id<MTLLibrary> library, NSString *name)
 {
-    uniforms_t *uniforms = (uniforms_t *) [_uniformBuffer[_currentBufferIndex] contents];
-    uniforms->viewMatrix = _viewMatrix;
-    uniforms->projectionMatrix = _projectionMatrix;
+    id<MTLFunction> func = [library newFunctionWithName: name];
+    if (!func) {
+        NSLog(@"failed to find function %@ in the library", name);
+        assert(0);
+    }
+    return func;
 }
 
-- (NSUInteger) updateParticleBuffer
+static id<MTLRenderPipelineState> _createPipelineStateObject(id<MTLDevice> device, MTLRenderPipelineDescriptor *descriptor)
 {
-    std::vector<simd::float4x4> particles = updateParticles(&_particles, (uint32_t) _particleCount);
+    NSError *error;
+    id<MTLRenderPipelineState> PSO = [device newRenderPipelineStateWithDescriptor:descriptor error:&error];
+    if (!PSO || error) {
+        NSLog(@"Failed to create pipeline. Error description: %@", [error description]);
+        assert(0);
+    }
     
-    memcpy((particle_t *) [_particleBuffer[_currentBufferIndex] contents],
-           &particles[0],
-           sizeof(simd::float4x4) * particles.size());
-    
-    return particles.size();
+    return PSO;
 }
 
 @end

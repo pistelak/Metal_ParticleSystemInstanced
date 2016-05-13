@@ -46,6 +46,13 @@ simd::float4x4 AAPL::scale(const simd::float3& s)
     return simd::float4x4(v);
 } // scale
 
+simd::float4x4 AAPL::scale(const float xyz)
+{
+    simd::float4 v = {xyz, xyz, xyz, 1.0f};
+    
+    return simd::float4x4(v);
+} // scale
+
 #pragma mark -
 #pragma mark Public - Transformations - Translate
 

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "View.h"
+#import "AAPLView.h"
 
 @protocol ViewControllerDelegate;
 

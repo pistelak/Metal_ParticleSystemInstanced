@@ -30,8 +30,11 @@ enum PSBufferIndex  {
 typedef struct {
     simd::float4x4 viewMatrix;
     simd::float4x4 projectionMatrix;
-    simd::float4x4 spacing;
 } uniforms_t;
+
+typedef struct {
+    simd::float4x4 modelMatrix;
+} particleGPU_t;
 
 #endif
 
