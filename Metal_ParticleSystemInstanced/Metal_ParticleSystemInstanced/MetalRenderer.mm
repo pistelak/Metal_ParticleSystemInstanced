@@ -11,6 +11,7 @@
 #import "Math.h"
 #import "ParticleSystem.h"
 #import "Uniforms.h"
+#import "Utils.h"
 
 @implementation MetalRenderer
 {
@@ -61,16 +62,10 @@
 
 - (void)initializePipelineStateWithVertexShader:(NSString*)vertexShaderName andFragmentShader:(NSString*)fragmentShaderName
 {
-    // shaders
     id <MTLFunction> vertexProgram = _newFunctionFromLibrary(_defaultLibrary, vertexShaderName);
     id <MTLFunction> fragmentProgram = _newFunctionFromLibrary(_defaultLibrary, fragmentShaderName);
     
-    _depthState = [_device newDepthStencilStateWithDescriptor:[self depthStateDescriptor]];
-    
-    if (!_depthState) {
-        assert(0);
-    }
-    
+    _depthState = _createDepthStateObject(_device, [self depthStateDescriptor]);
     _mtlVertexDescriptor = [self vertexDescriptor];
     
     MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
@@ -178,31 +173,6 @@
 - (void)reshape:(AAPLView *)view
 {
     _uniforms.drawableSize = view.drawableSize;
-}
-
-#pragma mark -
-#pragma mark Utils 
-
-static id<MTLFunction> _newFunctionFromLibrary(id<MTLLibrary> library, NSString *name)
-{
-    id<MTLFunction> func = [library newFunctionWithName: name];
-    if (!func) {
-        NSLog(@"failed to find function %@ in the library", name);
-        assert(0);
-    }
-    return func;
-}
-
-static id<MTLRenderPipelineState> _createPipelineStateObject(id<MTLDevice> device, MTLRenderPipelineDescriptor *descriptor)
-{
-    NSError *error;
-    id<MTLRenderPipelineState> PSO = [device newRenderPipelineStateWithDescriptor:descriptor error:&error];
-    if (!PSO || error) {
-        NSLog(@"Failed to create pipeline. Error description: %@", [error description]);
-        assert(0);
-    }
-    
-    return PSO;
 }
 
 @end

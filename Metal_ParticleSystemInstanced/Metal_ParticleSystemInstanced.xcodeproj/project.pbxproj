@@ -42,6 +42,7 @@
 		25563BD81CE0A9AD006971F2 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		256990241CE61F7900D21949 /* Uniforms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uniforms.h; sourceTree = "<group>"; };
 		256990251CE61F7900D21949 /* Uniforms.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Uniforms.mm; sourceTree = "<group>"; };
+		256990271CE62C1500D21949 /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		257ACE951CE27586000AD91D /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		257ACE961CE27586000AD91D /* ParticleSystem.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ParticleSystem.mm; sourceTree = "<group>"; };
 		257ACE981CE32B9D000AD91D /* AAPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLView.h; sourceTree = "<group>"; };
@@ -85,6 +86,7 @@
 				25563BDA1CE0A9B1006971F2 /* Shaders */,
 				25563BD71CE0A99D006971F2 /* Geometry */,
 				258B0DB91CE0CA86006DD5D7 /* Math */,
+				256990271CE62C1500D21949 /* Utils.h */,
 				25563BCE1CE07A99006971F2 /* MetalRenderer.h */,
 				25563BCF1CE07A99006971F2 /* MetalRenderer.mm */,
 				257ACE951CE27586000AD91D /* ParticleSystem.h */,
